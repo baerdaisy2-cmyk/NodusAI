@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import langflowAssistantIcon from "@/assets/langflow_assistant.svg";
+import NodusLogo from "@/components/common/nodusLogo";
 import MessageMetadata from "@/components/common/messageMetadataComponent";
 import { CustomProfileIcon } from "@/customization/components/custom-profile-icon";
 import { cn } from "@/utils/utils";
@@ -177,10 +177,9 @@ export function AssistantMessageItem({
           <CustomProfileIcon className="h-7 w-7 shrink-0 rounded-full" />
         ) : (
           <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-lg">
-            <img
-              src={langflowAssistantIcon}
-              alt={t("assistant.title")}
-              className="h-full w-full object-cover"
+            <NodusLogo
+              title={t("assistant.title")}
+              className="h-full w-full"
             />
           </div>
         )}

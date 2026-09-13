@@ -36,11 +36,6 @@ jest.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: jest.fn() },
 }));
 
-jest.mock("react-icons/fa", () => ({
-  FaGithub: () => <div data-testid="icon-github" />,
-  FaDiscord: () => <div data-testid="icon-discord" />,
-}));
-
 jest.mock("@/components/common/genericIconComponent", () => ({
   ForwardedIconComponent: ({ name }: IconProps) => (
     <div data-testid={`icon-${name}`}>{name}</div>
@@ -69,22 +64,6 @@ jest.mock("@/components/ui/button", () => ({
   ),
 }));
 
-jest.mock("@/controllers/API/queries/auth", () => ({
-  useGetUserData: () => ({ mutate: jest.fn() }),
-  useUpdateUser: () => ({ mutate: jest.fn() }),
-}));
-
-jest.mock("@/stores/authStore", () => ({
-  __esModule: true,
-  default: () => ({ id: "user-1", optins: {} }),
-}));
-
-jest.mock("@/stores/darkStore", () => ({
-  useDarkStore: (
-    selector: (s: { stars: number; discordCount: number }) => unknown,
-  ) => selector({ stars: 149000, discordCount: 25000 }),
-}));
-
 jest.mock("@/stores/foldersStore", () => ({
   useFolderStore: (selector: (s: { folders: unknown[] }) => unknown) =>
     selector({ folders: [] }),
@@ -95,21 +74,57 @@ jest.mock("../../hooks/use-on-file-drop", () => ({
   default: () => jest.fn(),
 }));
 
-describe("EmptyPageCommunity - Create first flow behavior", () => {
+
+const navigateMock = jest.fn();
+
+jest.mock("@/customization/hooks/use-custom-navigate", () => ({
+  useCustomNavigate: () => navigateMock,
+}));
+
+describe("EmptyPageCommunity actions", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    window.sessionStorage.clear();
   });
 
-  it("should_start_new_flow_when_create_first_flow_clicked", () => {
+  it("creates a normal blank workflow from the primary button", () => {
     const setOpenModal = jest.fn();
     render(<EmptyPageCommunity setOpenModal={setOpenModal} />);
 
     fireEvent.click(screen.getByTestId("new_project_btn_empty_page"));
 
-    // Empty-state button must open the new Langflow Assistant welcome flow,
-    // matching the "New Flow" button shown when the user already has flows.
-    expect(startNewFlowMock).toHaveBeenCalledTimes(1);
-    // It must NOT open the old TemplatesModal.
+    expect(startNewFlowMock).toHaveBeenCalledWith();
     expect(setOpenModal).not.toHaveBeenCalled();
+  });
+
+  it("opens the templates modal from Start from Template", () => {
+    const setOpenModal = jest.fn();
+    render(<EmptyPageCommunity setOpenModal={setOpenModal} />);
+
+    fireEvent.click(screen.getByTestId("empty_page_start_from_template"));
+
+    expect(setOpenModal).toHaveBeenCalledWith(true);
+    expect(startNewFlowMock).not.toHaveBeenCalled();
+  });
+
+  it("creates an AI-assisted flow without the standard welcome overlay", () => {
+    const setOpenModal = jest.fn();
+    render(<EmptyPageCommunity setOpenModal={setOpenModal} />);
+
+    fireEvent.click(screen.getByTestId("empty_page_build_with_ai"));
+
+    expect(startNewFlowMock).toHaveBeenCalledWith({ showWelcome: false });
+    expect(window.sessionStorage.getItem("nodusai:open-assistant-on-next-flow")).toBe(
+      "1",
+    );
+  });
+
+  it("navigates to the flows workspace", () => {
+    const setOpenModal = jest.fn();
+    render(<EmptyPageCommunity setOpenModal={setOpenModal} />);
+
+    fireEvent.click(screen.getByTestId("view_existing_workflows"));
+
+    expect(navigateMock).toHaveBeenCalledWith("/flows");
   });
 });

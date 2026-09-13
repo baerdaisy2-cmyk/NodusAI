@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
 import { useSidebar } from "@/components/ui/sidebar";
-import { useIsFlowReadOnly } from "@/contexts/permissionsContext";
+import {
+  useIsFlowPermissionPending,
+  useIsFlowReadOnly,
+} from "@/contexts/permissionsContext";
 import type { AgenticStepType } from "@/controllers/API/queries/agentic";
 import useAssistantManagerStore from "@/stores/assistantManagerStore";
 import useFlowBuilderWelcomeStore from "@/stores/flowBuilderWelcomeStore";
@@ -96,13 +99,18 @@ export function AssistantPanel({ isOpen, onClose }: AssistantPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const currentFlowId = useFlowStore((state) => state.currentFlow?.id);
   const isReadOnly = useIsFlowReadOnly(currentFlowId);
+  const isPermissionPending = useIsFlowPermissionPending(currentFlowId);
   // The expanded sidebar offsets the canvas 280px, so the panel shifts right
   // by half that (140px) to stay centered on the canvas.
   const isSidebarOpen = useSidebar().open;
 
   useEffect(() => {
-    if (isOpen && isReadOnly) onClose();
-  }, [isOpen, isReadOnly, onClose]);
+    // A freshly-created flow is temporarily reported as read-only while its
+    // permission query is still resolving. Do not interpret that transient
+    // state as a real denial and close the Assistant. Keep the open intent;
+    // the panel will render automatically once permissions resolve.
+    if (isOpen && isReadOnly && !isPermissionPending) onClose();
+  }, [isOpen, isReadOnly, isPermissionPending, onClose]);
 
   useEffect(() => {
     if (!isOpen) return;

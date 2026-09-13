@@ -429,7 +429,30 @@ const SideBarFoldersButtonsComponent = ({
       data-testid="project-sidebar"
       aria-labelledby="project-sidebar-title"
     >
-      <SidebarHeader className="px-4 py-1">
+      <SidebarHeader className="px-4 py-2">
+        <div className="flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={() => _navigate("/")}
+            className="flex min-w-0 items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+            aria-label="NodusAI home"
+          >
+            <ForwardedIconComponent
+              name="Sparkles"
+              className="h-4 w-4 shrink-0 text-accent-assistant-brand"
+            />
+            <span className="truncate">NodusAI</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => _navigate("/flows")}
+            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            aria-label="Workflows"
+            title="Workflows"
+          >
+            <ForwardedIconComponent name="LayoutGrid" className="h-4 w-4" />
+          </button>
+        </div>
         <HeaderButtons
           handleUploadFlowsToFolder={handleUploadFlowsToFolder}
           isUpdatingFolder={isUpdatingFolder}

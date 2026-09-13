@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import LangflowLogo from "@/assets/LangflowLogo.svg?react";
+import logoDarkPng from "@/assets/logo_dark.png";
+import logoLightPng from "@/assets/logo_light.png";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import CardsWrapComponent from "@/components/core/cardsWrapComponent";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,18 @@ export const EmptyPage = ({ setOpenModal }: EmptyPageProps) => {
       <div className="m-0 h-full w-full bg-secondary p-0">
         <div className="text-container">
           <div className="relative z-20 flex w-full flex-col items-center justify-center gap-2">
-            <LangflowLogo className="h-7 w-8" />
+            <div className="flex items-center justify-center">
+              <img
+                src={logoLightPng}
+                alt={t("common.langflowLogoLight")}
+                className="h-8 w-8 object-contain dark:hidden"
+              />
+              <img
+                src={logoDarkPng}
+                alt={t("common.langflowLogoDark")}
+                className="hidden h-8 w-8 object-contain dark:block"
+              />
+            </div>
             <h3
               className="pt-5 font-chivo text-2xl font-semibold text-foreground"
               data-testid="mainpage_title"

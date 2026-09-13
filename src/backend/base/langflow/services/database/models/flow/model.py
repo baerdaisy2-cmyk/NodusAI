@@ -304,6 +304,7 @@ class FlowUpdate(SQLModel):
     name: str | None = None
     description: str | None = None
     data: dict | None = None
+    tags: list[str] | None = None
     folder_id: UUID | None = None
     workspace_id: UUID | None = None
     endpoint_name: str | None = None

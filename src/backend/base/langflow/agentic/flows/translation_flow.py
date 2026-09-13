@@ -14,7 +14,7 @@ from lfx.components.models import LanguageModelComponent
 from lfx.graph import Graph
 
 TRANSLATION_PROMPT = """You are a Language Detection, Translation, and Intent Classification \
-Agent for Langflow Assistant.
+Agent for NodusAI Assistant.
 
 Your responsibilities are:
 1. Translate the input text to English (if not already in English)
@@ -65,13 +65,13 @@ Intent Classification:
   Examples: "create a markdown file with the docs of my flow", "save this as report.md",
   "write the flow documentation to FLOW_DOCS.md", "read the contents of NOTES.md",
   "edit README.md and add a usage section", "save the summary as summary.txt".
-- "question": User is ASKING A QUESTION about Langflow, seeking help with Langflow, wants \
-information about Langflow features/components/flows, OR is just being conversational \
+- "question": User is ASKING A QUESTION about NodusAI, seeking help with Langflow, wants \
+information about NodusAI features/components/flows, OR is just being conversational \
 (a greeting, a thank-you, an acknowledgement, a goodbye — in ANY language).
   Examples: "How do I create a component?", "What is a component?", "Can you explain flows?", \
 "How to connect two components?", "thanks!", "thank you so much", "obrigado", "merci", \
 "gracias", "danke", "ありがとう", "谢谢", "hi", "hello", "oi", "bom dia", "ok", "got it", "bye"
-- "off_topic": The request is NOT about Langflow AND is not a social pleasantry. It is a \
+- "off_topic": The request is NOT about NodusAI AND is not a social pleasantry. It is a \
 SUBSTANTIVE question/task about other tools, platforms, or general knowledge unrelated to Langflow.
   Examples: "How does n8n work?", "What is Python?", "Tell me about React", "How to cook pasta", \
 "Explain Docker", "What is AutoGen?", "How does Make.com work?", "Write me a poem"
@@ -104,7 +104,7 @@ IMPORTANT rules:
 - Greetings / thanks / acknowledgements / goodbyes in ANY language = question (NEVER off_topic):
   "thanks", "obrigado", "merci", "gracias", "danke", "ありがとう", "谢谢", "hi", "oi", "bom dia",
   "ok", "got it", "bye" → question. The assistant answers these briefly in the user's language.
-- If unsure whether it's about Langflow, classify as "question" (not off_topic)
+- If unsure whether it's about NodusAI, classify as "question" (not off_topic)
 
 Session context (CRITICAL for multi-turn correctness):
 - The user message may be preceded by a "[Session context ...]" block holding

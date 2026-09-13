@@ -11,6 +11,6 @@ export function getHealthCheckUrl(): string {
   return HEALTH_CHECK_URL || "/health";
 }
 
-export const LangflowButtonRedirectTarget = () => {
-  return "https://langflow.org";
+export const NodusAIButtonRedirectTarget = () => {
+  return "https://github.com/baerdaisy2-cmyk/NodusAI";
 };

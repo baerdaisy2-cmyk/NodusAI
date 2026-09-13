@@ -48,7 +48,7 @@ describe("CrashErrorComponent accessibility", () => {
     const report = screen.getByRole("link", { name: /report on github/i });
     expect(report).toHaveAttribute(
       "href",
-      "https://github.com/langflow-ai/langflow/issues/new",
+      "https://github.com/baerdaisy2-cmyk/NodusAI/issues/new",
     );
     expect(report.querySelector("button")).toBeNull();
     expect(

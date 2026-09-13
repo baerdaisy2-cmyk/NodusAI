@@ -117,7 +117,7 @@ export default function ApiModal({
               {t("modal.api.description")}{" "}
               <CustomLink
                 to="/settings/api-keys"
-                className="text-accent-pink-foreground"
+                className="text-accent-assistant-brand"
               >
                 {" "}
                 {t("modal.api.createApiKey")}

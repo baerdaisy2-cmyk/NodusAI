@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Keep this syntax directive! It's used to enable Docker BuildKit
 #
-# Backend-only Langflow image
+# Backend-only NodusAI image
 # - No frontend code or assets
 # - No Playwright
 
@@ -112,11 +112,11 @@ RUN mkdir -p /app/data /app/langflow \
     && chmod -R g+rwX /app/data /app/langflow \
     && chown 1000:0 /app
 
-LABEL org.opencontainers.image.title=langflow-backend
-LABEL org.opencontainers.image.authors=['Langflow']
+LABEL org.opencontainers.image.title=nodusai-backend
+LABEL org.opencontainers.image.authors=['NodusAI']
 LABEL org.opencontainers.image.licenses=MIT
-LABEL org.opencontainers.image.url=https://github.com/langflow-ai/langflow
-LABEL org.opencontainers.image.source=https://github.com/langflow-ai/langflow
+LABEL org.opencontainers.image.url=https://github.com/baerdaisy2-cmyk/NodusAI
+LABEL org.opencontainers.image.source=https://github.com/baerdaisy2-cmyk/NodusAI
 
 USER user
 WORKDIR /app

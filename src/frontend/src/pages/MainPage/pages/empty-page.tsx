@@ -1,7 +1,4 @@
-import { ExternalLink } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { FaDiscord, FaGithub } from "react-icons/fa";
-import { useShallow } from "zustand/react/shallow";
 import logoDarkPng from "@/assets/logo_dark.png";
 import logoLightPng from "@/assets/logo_light.png";
 import { ForwardedIconComponent } from "@/components/common/genericIconComponent";
@@ -9,16 +6,10 @@ import CardsWrapComponent from "@/components/core/cardsWrapComponent";
 import { useStartNewFlow } from "@/components/core/flowBuilderWelcome/hooks/use-start-new-flow";
 import { Button } from "@/components/ui/button";
 import { DotBackgroundDemo } from "@/components/ui/dot-background";
-import { DISCORD_URL, GITHUB_URL } from "@/constants/constants";
-import { useGetUserData, useUpdateUser } from "@/controllers/API/queries/auth";
-import useAuthStore from "@/stores/authStore";
-import { useDarkStore } from "@/stores/darkStore";
+import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
 import { useFolderStore } from "@/stores/foldersStore";
-import { formatNumber } from "@/utils/utils";
 import useFileDrop from "../hooks/use-on-file-drop";
 
-const EXTERNAL_LINK_ICON_CLASS =
-  "absolute right-6 top-[35px] h-4 w-4 shrink-0 translate-x-0 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100";
 
 export const EmptyPageCommunity = ({
   setOpenModal,
@@ -28,27 +19,14 @@ export const EmptyPageCommunity = ({
   const { t } = useTranslation();
   const handleFileDrop = useFileDrop(undefined);
   const folders = useFolderStore((state) => state.folders);
-  const userData = useAuthStore(useShallow((state) => state.userData));
-  const stars: number | undefined = useDarkStore((state) => state.stars);
-  const discordCount: number = useDarkStore((state) => state.discordCount);
-  const { mutate: updateUser } = useUpdateUser();
-  const { mutate: mutateLoggedUser } = useGetUserData();
   const startNewFlow = useStartNewFlow();
+  const navigate = useCustomNavigate();
 
-  const handleUserTrack = (key: string) => () => {
-    const optins = userData?.optins ?? {};
-    optins[key] = true;
-    updateUser(
-      {
-        user_id: userData?.id!,
-        user: { optins },
-      },
-      {
-        onSuccess: () => {
-          mutateLoggedUser({});
-        },
-      },
-    );
+  const handleBuildWithAI = async () => {
+    // Create the flow with NodusAI's AI-builder welcome surface enabled.
+    // The welcome accepts the user's natural-language request, then hands it
+    // to the Assistant once the user submits it.
+    await startNewFlow({ showWelcome: true });
   };
 
   return (
@@ -65,7 +43,7 @@ export const EmptyPageCommunity = ({
                   src={logoLightPng}
                   alt={t("common.langflowLogoLight")}
                   data-testid="empty_page_logo_light"
-                  className="relative top-8 h-40 pointer-events-none select-none"
+                  className="pointer-events-none relative top-8 h-40 select-none"
                 />
               </div>
               <div className="z-50 hidden dark:block">
@@ -73,9 +51,10 @@ export const EmptyPageCommunity = ({
                   src={logoDarkPng}
                   alt={t("common.langflowLogoDark")}
                   data-testid="empty_page_logo_dark"
-                  className="relative top-8 h-40 pointer-events-none select-none"
+                  className="pointer-events-none relative top-8 h-40 select-none"
                 />
               </div>
+
               <span
                 data-testid="mainpage_title"
                 className="z-50 text-center font-chivo text-2xl font-medium text-foreground"
@@ -94,73 +73,48 @@ export const EmptyPageCommunity = ({
             </div>
 
             <div className="flex w-full max-w-[510px] flex-col gap-7 sm:gap-[29px]">
-              <Button
-                unstyled
-                className="group mx-3 min-h-[84px] sm:mx-0"
-                onClick={() => {
-                  handleUserTrack("github_starred")();
-                  window.open(GITHUB_URL, "_blank", "noopener,noreferrer");
-                }}
-                data-testid="empty_page_github_button"
-              >
-                <div className="relative flex flex-col rounded-lg border-[1px] bg-background p-4 transition-all duration-300 hover:border-accent-pink-foreground">
-                  <div className="grid w-full items-center justify-between gap-2">
-                    <div className="flex gap-3">
-                      <FaGithub className="h-6 w-6" aria-hidden="true" />
-                      <div>
-                        <span className="font-semibold">GitHub</span>
-                        <span className="ml-2 font-mono text-muted-foreground">
-                          {formatNumber(stars)}
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      <span className="line-clamp-2 text-left text-base text-secondary-foreground">
-                        {t("page.githubDescription")}
-                      </span>
-                    </div>
+              <div className="relative z-50 grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={handleBuildWithAI}
+                  data-testid="empty_page_build_with_ai"
+                  className="rounded-xl border border-border bg-background p-5 text-left transition duration-200 hover:-translate-y-1 hover:border-accent-assistant-brand hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
+                    <ForwardedIconComponent
+                      name="Sparkles"
+                      className="h-5 w-5 text-accent-assistant-brand"
+                    />
+                    <span>{t("page.buildWithAI")}</span>
                   </div>
-                  <ExternalLink className={EXTERNAL_LINK_ICON_CLASS} />
-                </div>
-              </Button>
+                  <div className="mt-3 text-sm text-muted-foreground">
+                    {t("page.buildWithAIDescription")}
+                  </div>
+                </button>
 
-              <Button
-                unstyled
-                className="group mx-3 min-h-[84px] sm:mx-0"
-                onClick={() => {
-                  handleUserTrack("discord_clicked")();
-                  window.open(DISCORD_URL, "_blank", "noopener,noreferrer");
-                }}
-                data-testid="empty_page_discord_button"
-              >
-                <div className="relative flex flex-col rounded-lg border-[1px] bg-background p-4 transition-all duration-300 hover:border-discord-color">
-                  <div className="grid w-full items-center justify-between gap-2">
-                    <div className="flex gap-3">
-                      <FaDiscord
-                        className="h-6 w-6 text-discord-color"
-                        aria-hidden="true"
-                      />
-                      <div>
-                        <span className="font-semibold">Discord</span>
-                        <span className="ml-2 font-mono text-muted-foreground">
-                          {formatNumber(discordCount)}
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      <span className="line-clamp-2 text-left text-base text-secondary-foreground">
-                        {t("page.discordDescription")}
-                      </span>
-                    </div>
+                <button
+                  type="button"
+                  onClick={() => setOpenModal(true)}
+                  data-testid="empty_page_start_from_template"
+                  className="rounded-xl border border-border bg-background p-5 text-left transition duration-200 hover:-translate-y-1 hover:border-accent-assistant-brand hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
+                    <ForwardedIconComponent
+                      name="LayoutGrid"
+                      className="h-5 w-5 text-accent-assistant-brand"
+                    />
+                    <span>{t("page.startFromTemplate")}</span>
                   </div>
-                  <ExternalLink className={EXTERNAL_LINK_ICON_CLASS} />
-                </div>
-              </Button>
+                  <div className="mt-3 text-sm text-muted-foreground">
+                    {t("page.startFromTemplateDescription")}
+                  </div>
+                </button>
+              </div>
 
               <Button
                 variant="default"
-                className="z-10 m-auto mt-3 h-auto min-h-10 w-auto whitespace-normal rounded-lg font-bold transition-all duration-300"
-                onClick={() => startNewFlow()}
+                className="z-10 m-auto mt-3 h-auto min-h-10 w-auto whitespace-normal rounded-lg bg-accent-assistant-brand font-bold text-white transition-all duration-300 hover:bg-accent-assistant-brand/90"
+                onClick={() => startNewFlow({ showWelcome: false })}
                 id="new-project-btn"
                 data-testid="new_project_btn_empty_page"
               >
@@ -171,9 +125,24 @@ export const EmptyPageCommunity = ({
                 />
                 <span>{t("page.createFirstFlow")}</span>
               </Button>
+
+              <Button
+                variant="ghost"
+                className="z-10 m-auto -mt-4 h-auto w-auto text-sm text-muted-foreground hover:text-foreground"
+                onClick={() => navigate("/flows")}
+                data-testid="view_existing_workflows"
+              >
+                <ForwardedIconComponent
+                  name="LayoutGrid"
+                  aria-hidden="true"
+                  className="h-4 w-4"
+                />
+                <span>{t("page.viewWorkflows")}</span>
+              </Button>
             </div>
           </div>
         </div>
+
         <p
           data-testid="empty_page_drag_and_drop_text"
           className="absolute bottom-5 left-0 right-0 mt-4 cursor-default text-center text-xxs text-muted-foreground"

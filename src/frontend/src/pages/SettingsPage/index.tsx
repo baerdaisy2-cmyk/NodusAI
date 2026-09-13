@@ -42,6 +42,43 @@ export default function SettingsPage(): JSX.Element {
 
   sidebarNavItems.push(
     {
+      title: t("settings.nav.modelProviders"),
+      href: "/settings/model-providers",
+      icon: (
+        <ForwardedIconComponent
+          name="BrainCircuit"
+          className="w-4 flex-shrink-0 justify-start stroke-[1.5]"
+        />
+      ),
+    },
+  );
+
+  if (!ENABLE_DATASTAX_LANGFLOW) {
+    sidebarNavItems.push(...CustomStoreSidebar(true));
+  }
+
+  sidebarNavItems.push(
+    {
+      title: t("settings.nav.dbProviders"),
+      href: "/settings/db-providers",
+      icon: (
+        <ForwardedIconComponent
+          name="Database"
+          className="w-4 flex-shrink-0 justify-start stroke-[1.5]"
+        />
+      ),
+    },
+    {
+      title: t("settings.nav.globalVariables"),
+      href: "/settings/global-variables",
+      icon: (
+        <ForwardedIconComponent
+          name="Globe"
+          className="w-4 flex-shrink-0 justify-start stroke-[1.5]"
+        />
+      ),
+    },
+    {
       title: t("settings.nav.mcpServers"),
       href: "/settings/mcp-servers",
       icon: (
@@ -61,37 +98,6 @@ export default function SettingsPage(): JSX.Element {
         />
       ),
     },
-    {
-      title: t("settings.nav.globalVariables"),
-      href: "/settings/global-variables",
-      icon: (
-        <ForwardedIconComponent
-          name="Globe"
-          className="w-4 flex-shrink-0 justify-start stroke-[1.5]"
-        />
-      ),
-    },
-    {
-      title: t("settings.nav.modelProviders"),
-      href: "/settings/model-providers",
-      icon: (
-        <ForwardedIconComponent
-          name="BrainCircuit"
-          className="w-4 flex-shrink-0 justify-start stroke-[1.5]"
-        />
-      ),
-    },
-    {
-      title: t("settings.nav.dbProviders"),
-      href: "/settings/db-providers",
-      icon: (
-        <ForwardedIconComponent
-          name="Database"
-          className="w-4 flex-shrink-0 justify-start stroke-[1.5]"
-        />
-      ),
-    },
-
     {
       title: t("settings.nav.shortcuts"),
       href: "/settings/shortcuts",
@@ -113,12 +119,6 @@ export default function SettingsPage(): JSX.Element {
       ),
     },
   );
-
-  // TODO: Remove this on cleanup
-  if (!ENABLE_DATASTAX_LANGFLOW) {
-    const langflowItems = CustomStoreSidebar(true);
-    sidebarNavItems.splice(2, 0, ...langflowItems);
-  }
 
   // Every settings section shares this shell, so the tab title has to name the
   // open section rather than just "Settings" (WCAG 2.4.2).

@@ -28,6 +28,7 @@ import {
   MIN_ZOOM,
 } from "@/components/core/canvasControlsComponent/fit-view-options";
 import { FlowBuilderWelcomeMount } from "@/components/core/flowBuilderWelcome/flow-builder-welcome-mount";
+import { Button } from "@/components/ui/button";
 import FlowToolbar from "@/components/core/flowToolbarComponent";
 import {
   NOTE_NODE_MIN_HEIGHT,
@@ -70,6 +71,7 @@ import {
   isValidConnection,
   scapeJSONParse,
   updateIds,
+  validateNodes,
   validateSelection,
 } from "../../../../utils/reactflowUtils";
 import { edgeTypes, nodeTypes } from "../../consts";
@@ -131,6 +133,11 @@ export default function Page({
   const edges = useFlowStore((state) => state.edges);
   const isEmptyFlow = useRef(nodes.length === 0);
 
+  const workflowIssues = useMemo(
+    () => validateNodes(nodes, edges).flatMap((item) => item.errors),
+    [nodes, edges],
+  );
+
   const nodesWithAriaLabel = useMemo(() => {
     // Labels are derived from the whole list at once: same-type nodes would
     // otherwise share an accessible name, which role="application" forbids.
@@ -191,6 +198,12 @@ export default function Page({
   const previewLabel = useVersionPreviewStore((s) => s.previewLabel);
   const isPreviewActive = previewLabel !== null;
   const isWelcomeOpen = useFlowBuilderWelcomeStore((state) => state.isOpen);
+  const setPendingMessage = useFlowBuilderWelcomeStore(
+    (state) => state.setPendingMessage,
+  );
+  const setAssistantSidebarOpen = useAssistantManagerStore(
+    (state) => state.setAssistantSidebarOpen,
+  );
   const onNodesChange = useFlowStore((state) => state.onNodesChange);
   const onEdgesChange = useFlowStore((state) => state.onEdgesChange);
   const setNodes = useFlowStore((state) => state.setNodes);
@@ -274,6 +287,50 @@ export default function Page({
   }, [isAgentWorking]);
   const applyFlowToCanvas = useApplyFlowToCanvas();
   const setSuccessData = useAlertStore((state) => state.setSuccessData);
+
+  const handleWorkflowHealthCheck = useCallback(() => {
+    if (workflowIssues.length > 0) {
+      setErrorData({
+        title: "Workflow needs attention",
+        list: workflowIssues.slice(0, 10),
+      });
+      return;
+    }
+
+    setSuccessData({
+      title: "Workflow is ready",
+    });
+  }, [workflowIssues, setErrorData, setSuccessData]);
+
+  const handleFixWorkflowWithAI = useCallback(() => {
+    if (workflowIssues.length === 0) {
+      setSuccessData({ title: "Workflow is ready" });
+      return;
+    }
+
+    const issueList = workflowIssues
+      .slice(0, 10)
+      .map((issue, index) => `${index + 1}. ${issue}`)
+      .join("\n");
+
+    setPendingMessage(
+      [
+        "Review the current NodusAI workflow and fix the validation issues below.",
+        "Preserve the user's intended workflow behavior and make the smallest safe changes needed.",
+        "",
+        issueList,
+        "",
+        "After fixing them, briefly explain what you changed.",
+      ].join("\n"),
+    );
+    setAssistantSidebarOpen(true);
+  }, [
+    workflowIssues,
+    setPendingMessage,
+    setAssistantSidebarOpen,
+    setSuccessData,
+  ]);
+
   const prevSettledRef = useRef<number | null>(null);
 
   const eventsRef = useRef(events);
@@ -1120,6 +1177,53 @@ export default function Page({
               {helperLineEnabled && <HelperLines helperLines={helperLines} />}
             </ReactFlow>
             <FlowBuildingComponent />
+            {!view && !isWelcomeOpen && !isPreviewActive && (
+              <div className="absolute bottom-4 left-4 z-40 flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleWorkflowHealthCheck}
+                  className="gap-2 rounded-full bg-background/95 shadow-sm backdrop-blur"
+                  data-testid="workflow-health-check"
+                >
+                  <ForwardedIconComponent
+                    name={
+                      workflowIssues.length > 0 ? "CircleAlert" : "CircleCheck"
+                    }
+                    className={
+                      workflowIssues.length > 0
+                        ? "h-4 w-4 text-accent-amber-foreground"
+                        : "h-4 w-4 text-accent-emerald-foreground"
+                    }
+                    aria-hidden="true"
+                  />
+                  <span className="font-medium">
+                    {workflowIssues.length > 0
+                      ? `${workflowIssues.length} issue${workflowIssues.length === 1 ? "" : "s"}`
+                      : "Workflow ready"}
+                  </span>
+                </Button>
+
+                {workflowIssues.length > 0 && (
+                  <Button
+                    type="button"
+                    variant="default"
+                    size="sm"
+                    onClick={handleFixWorkflowWithAI}
+                    className="gap-2 rounded-full shadow-sm"
+                    data-testid="workflow-fix-with-ai"
+                  >
+                    <ForwardedIconComponent
+                      name="Sparkles"
+                      className="h-4 w-4"
+                      aria-hidden="true"
+                    />
+                    <span className="font-medium">Fix with AI</span>
+                  </Button>
+                )}
+              </div>
+            )}
             {bannerVisible && (
               <div
                 className={`pointer-events-none absolute inset-0 z-50 ${bannerExiting ? "agent-badge-exit" : "agent-badge-enter"}`}

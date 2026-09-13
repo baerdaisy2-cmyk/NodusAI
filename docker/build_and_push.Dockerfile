@@ -217,10 +217,10 @@ RUN mkdir -p /app/.npm /opt/app-root/src/.npm \
     && chown -R 1000:0 /app/.npm /opt/app-root/src/.npm \
     && chmod -R g+rwX /app/.npm /opt/app-root/src/.npm
 
-LABEL org.opencontainers.image.authors=['Langflow'] \
+LABEL org.opencontainers.image.authors=['NodusAI'] \
       org.opencontainers.image.licenses=MIT \
-      org.opencontainers.image.url=https://github.com/langflow-ai/langflow \
-      org.opencontainers.image.source=https://github.com/langflow-ai/langflow
+      org.opencontainers.image.url=https://github.com/baerdaisy2-cmyk/NodusAI \
+      org.opencontainers.image.source=https://github.com/baerdaisy2-cmyk/NodusAI
 
 ENV PATH="/app/.venv/bin:$PATH" \
     HOME=/app/data \
@@ -246,7 +246,7 @@ CMD ["langflow", "run"]
 FROM runtime AS base
 
 COPY --from=base-builder --chown=1000:0 /app/.venv /app/.venv
-LABEL org.opencontainers.image.title=langflow-base
+LABEL org.opencontainers.image.title=nodusai-base
 
 ################################
 # FULL-BUNDLES IMAGE
@@ -255,7 +255,7 @@ LABEL org.opencontainers.image.title=langflow-base
 FROM runtime AS full-bundles
 
 COPY --from=full-bundles-builder --chown=1000:0 /app/.venv /app/.venv
-LABEL org.opencontainers.image.title=langflow-all
+LABEL org.opencontainers.image.title=nodusai-all
 
 ################################
 # DEFAULT IMAGE (default/final target)
@@ -264,4 +264,4 @@ LABEL org.opencontainers.image.title=langflow-all
 FROM runtime AS full
 
 COPY --from=full-builder --chown=1000:0 /app/.venv /app/.venv
-LABEL org.opencontainers.image.title=langflow
+LABEL org.opencontainers.image.title=nodusai

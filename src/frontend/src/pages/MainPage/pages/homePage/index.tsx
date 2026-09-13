@@ -68,11 +68,15 @@ const HomePage = ({ type }: { type: "flows" | "components" | "mcp" }) => {
     ? getProjectDisplayName(currentFolder, t)
     : "";
   const flows = useFlowsManagerStore((state) => state.flows);
-  // The primary "New Flow" handler — creates an empty flow, primes the
-  // welcome overlay store, and navigates to the canvas. Replaces the old
-  // "open the templates modal" behavior. The templates modal is still
-  // reachable from inside the welcome via "Browse more templates".
   const startNewFlow = useStartNewFlow();
+  const startBlankFlow = useCallback(
+    () => startNewFlow({ showWelcome: false }),
+    [startNewFlow],
+  );
+  const startAIFlow = useCallback(
+    () => startNewFlow({ showWelcome: true }),
+    [startNewFlow],
+  );
 
   useEffect(() => {
     // Only check if we have a folderId and folders have loaded
@@ -329,7 +333,8 @@ const HomePage = ({ type }: { type: "flows" | "components" | "mcp" }) => {
                   view={view}
                   setView={setView}
                   setNewProjectModal={setNewProjectModal}
-                  onNewFlow={startNewFlow}
+                  onNewFlow={startBlankFlow}
+                  onBuildWithAI={startAIFlow}
                   setSearch={onSearch}
                   isEmptyFolder={isEmptyFolder === true}
                   selectedFlows={selectedFlows}
@@ -337,7 +342,8 @@ const HomePage = ({ type }: { type: "flows" | "components" | "mcp" }) => {
                 {isEmptyFolder === true ? (
                   <EmptyFolder
                     setOpenModal={setNewProjectModal}
-                    onNewFlow={startNewFlow}
+                    onNewFlow={startBlankFlow}
+                    onBuildWithAI={startAIFlow}
                   />
                 ) : (
                   <div className="flex h-full flex-col">

@@ -19,6 +19,7 @@ import {
 } from "./helpers/find-starter-template";
 
 const COMPOSER_MAX_HEIGHT_PX = 144; // 9rem — keeps the conversation above the composer readable
+const BUILD_WITH_AI_DRAFT_KEY = "nodusai:build-with-ai-draft";
 
 interface FlowBuilderWelcomeProps {
   /** Called with the trimmed text when the user submits the textarea. */
@@ -43,6 +44,25 @@ interface FlowBuilderWelcomeProps {
 const TEMPLATE_BUTTON_CLASS =
   "flex h-[3.125rem] w-[11rem] items-center justify-center gap-2.5 whitespace-nowrap rounded-xl border border-border bg-muted p-[0.8125rem] text-sm font-medium text-foreground transition-colors hover:bg-border";
 
+const PROMPT_STARTERS = [
+  {
+    labelKey: "flowBuilderWelcome.promptStarterDocumentQA",
+    promptKey: "flowBuilderWelcome.promptStarterDocumentQAPrompt",
+  },
+  {
+    labelKey: "flowBuilderWelcome.promptStarterResearch",
+    promptKey: "flowBuilderWelcome.promptStarterResearchPrompt",
+  },
+  {
+    labelKey: "flowBuilderWelcome.promptStarterSupport",
+    promptKey: "flowBuilderWelcome.promptStarterSupportPrompt",
+  },
+  {
+    labelKey: "flowBuilderWelcome.promptStarterExtractor",
+    promptKey: "flowBuilderWelcome.promptStarterExtractorPrompt",
+  },
+] as const;
+
 export function FlowBuilderWelcome({
   onSubmit,
   onSelectTemplate,
@@ -50,7 +70,13 @@ export function FlowBuilderWelcome({
   onClose,
   onSelectRailItem,
 }: FlowBuilderWelcomeProps) {
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(() => {
+    try {
+      return window.localStorage.getItem(BUILD_WITH_AI_DRAFT_KEY) ?? "";
+    } catch {
+      return "";
+    }
+  });
   // Same server-owned cap the assistant panel uses (LANGFLOW_ASSISTANT_MAX_MESSAGE_LENGTH,
   // served by /config): this textarea posts to the same assistant endpoint.
   const maxMessageLength = useUtilityStore(
@@ -73,6 +99,19 @@ export function FlowBuilderWelcome({
   useEffect(() => {
     textareaRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    try {
+      if (message) {
+        window.localStorage.setItem(BUILD_WITH_AI_DRAFT_KEY, message);
+      } else {
+        window.localStorage.removeItem(BUILD_WITH_AI_DRAFT_KEY);
+      }
+    } catch {
+      // Draft persistence is a convenience; never block the builder if storage
+      // is unavailable or restricted by the browser.
+    }
+  }, [message]);
 
   useEffect(() => {
     const handleKey = (e: globalThis.KeyboardEvent) => {
@@ -109,6 +148,11 @@ export function FlowBuilderWelcome({
   const trySubmit = () => {
     const trimmed = message.trim();
     if (!canSend || trimmed.length > maxMessageLength) return;
+    try {
+      window.localStorage.removeItem(BUILD_WITH_AI_DRAFT_KEY);
+    } catch {
+      // Non-critical: the request should still submit.
+    }
     onSubmit(trimmed);
   };
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -116,6 +160,17 @@ export function FlowBuilderWelcome({
       e.preventDefault();
       trySubmit();
     }
+  };
+
+  const applyPromptStarter = (prompt: string) => {
+    setMessage(prompt.slice(0, maxMessageLength));
+    requestAnimationFrame(() => {
+      textareaRef.current?.focus();
+      textareaRef.current?.setSelectionRange(
+        textareaRef.current.value.length,
+        textareaRef.current.value.length,
+      );
+    });
   };
   // A settled empty catalog means configuration is needed. Pending, paused,
   // or failed policy resolution keeps the composer visible but inert so stale
@@ -184,18 +239,55 @@ export function FlowBuilderWelcome({
         </h1>
 
         {showNoProviderState ? (
-          // No provider: drop the glow + gray input shell entirely. A clean,
-          // minimal block — just the message + CTA — reads as a calm setup
-          // step rather than a broken input. Templates below stay usable.
           <div
             data-testid="flow-builder-welcome-no-provider"
-            className="flex w-full flex-col items-center gap-3 py-4 text-center"
+            className="flex w-full flex-col items-center gap-4"
           >
-            <p className="max-w-[26rem] text-sm text-muted-foreground">
-              {t("flowBuilderWelcome.noProviderDescription")}
+            <p className="max-w-[34rem] text-center text-sm text-muted-foreground">
+              {t("flowBuilderWelcome.noProviderDraftDescription")}
             </p>
+
+            <div className="w-full rounded-lg border border-border bg-muted/60 p-3">
+              <textarea
+                ref={textareaRef}
+                data-testid="flow-builder-welcome-draft-textarea"
+                placeholder={t("flowBuilderWelcome.textareaPlaceholder")}
+                value={message}
+                maxLength={maxMessageLength}
+                onChange={(e) => setMessage(e.target.value)}
+                rows={4}
+                className="nopan nodelete nodrag noflow nowheel max-h-[9rem] w-full resize-none overflow-y-auto border-0 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-0"
+              />
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <span className="text-xs text-muted-foreground">
+                  {t("flowBuilderWelcome.draftSaved")}
+                </span>
+                <span className="text-xs tabular-nums text-muted-foreground">
+                  {messageLength}/{maxMessageLength}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-xs font-medium text-muted-foreground">
+                {t("flowBuilderWelcome.promptStartersLabel")}
+              </span>
+              <div className="flex flex-wrap justify-center gap-2">
+                {PROMPT_STARTERS.map((starter) => (
+                  <button
+                    key={starter.labelKey}
+                    type="button"
+                    onClick={() => applyPromptStarter(t(starter.promptKey))}
+                    className="rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-accent-assistant-brand/40 hover:bg-accent hover:text-foreground"
+                  >
+                    {t(starter.labelKey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <Button
-              variant="outline"
+              variant="default"
               data-testid="flow-builder-welcome-configure-providers"
               className="gap-2"
               onClick={() => setIsProviderModalOpen(true)}
@@ -270,6 +362,24 @@ export function FlowBuilderWelcome({
                     <ArrowUp className="h-4 w-4" />
                   </button>
                 </div>
+              </div>
+            </div>
+
+            <div className="mt-3 flex flex-col items-center gap-2">
+              <span className="text-xs font-medium text-muted-foreground">
+                {t("flowBuilderWelcome.promptStartersLabel")}
+              </span>
+              <div className="flex flex-wrap justify-center gap-2">
+                {PROMPT_STARTERS.map((starter) => (
+                  <button
+                    key={starter.labelKey}
+                    type="button"
+                    onClick={() => applyPromptStarter(t(starter.promptKey))}
+                    className="rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-accent-assistant-brand/40 hover:bg-accent hover:text-foreground"
+                  >
+                    {t(starter.labelKey)}
+                  </button>
+                ))}
               </div>
             </div>
           </div>

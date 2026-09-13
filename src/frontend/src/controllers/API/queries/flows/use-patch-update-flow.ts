@@ -14,6 +14,7 @@ interface IPatchUpdateFlow {
   name?: string;
   data?: ReactFlowJsonObject;
   description?: string;
+  tags?: string[] | null;
   folder_id?: string | null | undefined;
   endpoint_name?: string | null | undefined;
   locked?: boolean | null | undefined;

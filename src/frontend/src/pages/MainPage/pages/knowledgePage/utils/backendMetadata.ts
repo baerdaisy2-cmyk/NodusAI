@@ -40,7 +40,7 @@ export const getKnowledgeBaseBackendTarget = (
   }
 
   if (backendType === "chroma") {
-    return "Stored locally in Langflow";
+    return "Stored locally in NodusAI";
   }
 
   if (backendType === "opensearch") {

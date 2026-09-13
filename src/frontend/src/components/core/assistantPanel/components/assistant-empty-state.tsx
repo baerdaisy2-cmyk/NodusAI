@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import langflowAssistantIcon from "@/assets/langflow_assistant.svg";
+import NodusLogo from "@/components/common/nodusLogo";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,10 +21,9 @@ export function AssistantEmptyState({
   return (
     <Empty className="flex-1 px-8">
       <EmptyMedia className="mb-6 h-16 w-16 overflow-hidden rounded-2xl">
-        <img
-          src={langflowAssistantIcon}
-          alt={t("assistant.title")}
-          className="h-full w-full object-cover"
+        <NodusLogo
+          title={t("assistant.title")}
+          className="h-full w-full"
         />
       </EmptyMedia>
       <EmptyTitle className="mb-6 text-center text-base leading-6 tracking-normal text-foreground">

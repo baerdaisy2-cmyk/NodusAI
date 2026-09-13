@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
 import { usePostAddFlow } from "@/controllers/API/queries/flows/use-post-add-flow";
 import { useFolderStore } from "@/stores/foldersStore";
 import type { FlowType } from "@/types/flow";
@@ -11,18 +12,27 @@ type UseDuplicateFlowsParams = {
 const useDuplicateFlow = ({ flow }: UseDuplicateFlowsParams) => {
   const { mutateAsync: postAddFlow } = usePostAddFlow();
   const { folderId } = useParams();
+  const navigate = useCustomNavigate();
   const myCollectionId = useFolderStore((state) => state.myCollectionId);
 
   const handleDuplicate = async () => {
-    if (flow?.data) {
-      const folder_id = folderId ?? myCollectionId ?? "";
+    if (!flow?.data) return undefined;
 
-      const newFlow = createNewFlow(flow.data, folder_id, flow);
+    const folder_id = folderId ?? myCollectionId ?? "";
+    const newFlow = createNewFlow(flow.data, folder_id, flow);
 
-      newFlow.folder_id = folder_id;
+    newFlow.folder_id = folder_id;
+    newFlow.name = `Copy of ${flow.name}`;
 
-      await postAddFlow(newFlow);
-    }
+    const duplicatedFlow = await postAddFlow(newFlow);
+
+    navigate(
+      `/flow/${duplicatedFlow.id}${
+        duplicatedFlow.folder_id ? `/folder/${duplicatedFlow.folder_id}` : ""
+      }`,
+    );
+
+    return duplicatedFlow;
   };
 
   return { handleDuplicate };

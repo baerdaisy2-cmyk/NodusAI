@@ -26,6 +26,8 @@ import useDescriptionModal from "../../hooks/use-description-modal";
 import { useGetTemplateStyle } from "../../utils/get-template-style";
 import { timeElapsed } from "../../utils/time-elapse";
 import DropdownComponent from "../dropdown";
+import SnapshotHistoryModal from "../snapshotHistoryModal";
+import WorkflowNotesModal from "../workflowNotesModal";
 
 const ListComponent = ({
   flowData,
@@ -47,6 +49,8 @@ const ListComponent = ({
   const { folderId } = useParams();
   const [openSettings, setOpenSettings] = useState(false);
   const [openExportModal, setOpenExportModal] = useState(false);
+  const [openSnapshotHistory, setOpenSnapshotHistory] = useState(false);
+  const [openWorkflowNotes, setOpenWorkflowNotes] = useState(false);
   const isComponent = flowData.is_component ?? false;
 
   const { getIcon } = useGetTemplateStyle(flowData);
@@ -236,6 +240,8 @@ const ListComponent = ({
                 handleEdit={() => {
                   setOpenSettings(true);
                 }}
+                openSnapshotHistory={() => setOpenSnapshotHistory(true)}
+                openWorkflowNotes={() => setOpenWorkflowNotes(true)}
               />
             </DropdownMenuContent>
           </DropdownMenu>
@@ -252,6 +258,16 @@ const ListComponent = ({
           }
         />
       )}
+      <SnapshotHistoryModal
+        open={openSnapshotHistory}
+        setOpen={setOpenSnapshotHistory}
+        flowData={flowData}
+      />
+      <WorkflowNotesModal
+        open={openWorkflowNotes}
+        setOpen={setOpenWorkflowNotes}
+        flowData={flowData}
+      />
       <ExportModal
         open={openExportModal}
         setOpen={setOpenExportModal}

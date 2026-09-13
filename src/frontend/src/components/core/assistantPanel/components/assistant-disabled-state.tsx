@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import langflowAssistantIcon from "@/assets/langflow_assistant.svg";
+import NodusLogo from "@/components/common/nodusLogo";
 
 export function AssistantDisabledState() {
   const { t } = useTranslation();
@@ -10,10 +10,9 @@ export function AssistantDisabledState() {
       data-testid="assistant-disabled-state"
     >
       <div className="mb-6 flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl">
-        <img
-          src={langflowAssistantIcon}
-          alt={t("assistant.title")}
-          className="h-full w-full object-cover"
+        <NodusLogo
+          title={t("assistant.title")}
+          className="h-full w-full"
         />
       </div>
       <h3 className="mb-3 text-center text-base font-semibold leading-6 tracking-normal text-foreground">

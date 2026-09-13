@@ -1,73 +1,60 @@
-import { useTranslation } from "react-i18next";
+import { useState } from "react";
 import { FaDiscord, FaGithub } from "react-icons/fa";
 import ShadTooltip from "@/components/common/shadTooltipComponent";
 import { Button } from "@/components/ui/button";
-import { DISCORD_URL, GITHUB_URL } from "@/constants/constants";
-import { Case } from "@/shared/components/caseComponent";
-import { useDarkStore } from "@/stores/darkStore";
-import { formatNumber } from "@/utils/utils";
 
 export const LangflowCounts = () => {
-  const { t } = useTranslation();
-  const stars: number | undefined = useDarkStore((state) => state.stars);
-  const discordCount: number = useDarkStore((state) => state.discordCount);
+  const discordUsername = "ragnar_lothbr17";
+  const githubUrl = "https://github.com/baerdaisy2-cmyk/NodusAI";
+  const [discordCopied, setDiscordCopied] = useState(false);
 
-  const formattedStars = formatNumber(stars);
-  const formattedDiscordCount = formatNumber(discordCount);
+  const copyDiscordUsername = async () => {
+    await navigator.clipboard.writeText(discordUsername);
+    setDiscordCopied(true);
+    window.setTimeout(() => setDiscordCopied(false), 1500);
+  };
 
   return (
     <div className="flex items-center gap-3">
       <ShadTooltip
-        content={t("header.goToGithub")}
+        content="Open NodusAI on GitHub"
         side="bottom"
         styleClasses="z-10"
         ariaDescribedBy={undefined}
       >
         <Button
           unstyled
-          onClick={() => window.open(GITHUB_URL, "_blank")}
+          onClick={() =>
+            window.open(githubUrl, "_blank", "noopener,noreferrer")
+          }
           className="hit-area-hover flex items-center gap-2 rounded-md p-1 text-muted-foreground"
+          aria-label="Open NodusAI on GitHub"
         >
-          <span className="sr-only">{t("header.goToGithub")}</span>
-          <div className="relative items-center rounded-md px-2 py-1 flex">
-            <FaGithub aria-hidden="true" className="h-4 w-4" />
-            <Case condition={Boolean(formattedStars) && formattedStars !== "0"}>
-              <span className="text-xs font-semibold pl-2" aria-hidden="true">
-                {formattedStars}
-              </span>
-            </Case>
-          </div>
+          <FaGithub className="h-4 w-4" aria-hidden="true" />
+          <span className="hidden text-xs font-semibold sm:inline">
+            NodusAI
+          </span>
         </Button>
       </ShadTooltip>
 
       <ShadTooltip
-        content={t("header.goToDiscord")}
+        content={discordCopied ? "Discord username copied" : "Copy Discord username"}
         side="bottom"
         styleClasses="z-10"
         ariaDescribedBy={undefined}
       >
         <Button
           unstyled
-          onClick={() => window.open(DISCORD_URL, "_blank")}
+          onClick={copyDiscordUsername}
           className="hit-area-hover flex items-center gap-2 rounded-md p-1 text-muted-foreground"
+          aria-label={`Copy Discord username ${discordUsername}`}
         >
-          <span className="sr-only">{t("header.goToDiscord")}</span>
-          <div className="relative items-center rounded-md px-2 py-1 flex">
-            <FaDiscord aria-hidden="true" className="h-4 w-4" />
-            <Case
-              condition={
-                Boolean(formattedDiscordCount) && formattedDiscordCount !== "0"
-              }
-            >
-              <span className="text-xs font-semibold pl-2" aria-hidden="true">
-                {formattedDiscordCount}
-              </span>
-            </Case>
-          </div>
+          <FaDiscord className="h-4 w-4" aria-hidden="true" />
+          <span className="hidden text-xs font-semibold sm:inline">
+            @{discordUsername}
+          </span>
         </Button>
       </ShadTooltip>
     </div>
   );
 };
-
-export default LangflowCounts;

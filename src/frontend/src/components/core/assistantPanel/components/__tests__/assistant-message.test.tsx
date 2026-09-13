@@ -30,7 +30,7 @@ jest.mock("@/customization/config-constants", () => ({
 }));
 
 // Mocking the customization layer for the user avatar is how we prove the
-// Desktop Langflow Assistant avatar bug is fixed: the component must render
+// Desktop NodusAI Assistant avatar bug is fixed: the component must render
 // CustomProfileIcon (which the Desktop customization overrides to prepend an
 // absolute baseURL), not a bare <img> with a relative URL.
 jest.mock("@/customization/components/custom-profile-icon", () => ({
@@ -238,8 +238,8 @@ describe("AssistantMessageItem", () => {
 
       render(<AssistantMessageItem message={message} />);
 
-      expect(screen.getByText("Langflow Assistant")).toBeInTheDocument();
-      expect(screen.getByAltText("Langflow Assistant")).toBeInTheDocument();
+      expect(screen.getByText("NodusAI Assistant")).toBeInTheDocument();
+      expect(screen.getByAltText("NodusAI Assistant")).toBeInTheDocument();
     });
   });
 

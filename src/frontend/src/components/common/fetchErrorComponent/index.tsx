@@ -22,14 +22,22 @@ export default function FetchErrorComponent({
         }}
       >
         <BaseModal.Content>
-          <div role="status" className="m-auto flex flex-col items-center">
-            <IconComponent
-              className={`h-16 w-16`}
-              name="Unplug"
-            ></IconComponent>
-            <br></br>
-            <span className="text-lg text-primary">{message}</span>
-            <span className="text-lg text-primary">{description}</span>
+          <div
+            role="status"
+            className="m-auto flex max-w-md flex-col items-center gap-3 text-center"
+          >
+            <div className="rounded-full bg-muted p-4">
+              <IconComponent
+                className="h-10 w-10 text-muted-foreground"
+                name="Unplug"
+              />
+            </div>
+            <span className="text-lg font-semibold text-foreground">
+              {message}
+            </span>
+            <span className="text-sm leading-6 text-muted-foreground">
+              {description}
+            </span>
           </div>
         </BaseModal.Content>
 

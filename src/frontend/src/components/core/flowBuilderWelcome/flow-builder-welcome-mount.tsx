@@ -1,12 +1,37 @@
 import { useCallback, useEffect, useState } from "react";
 import { type SidebarSection, useSidebar } from "@/components/ui/sidebar";
+import { usePatchUpdateFlow } from "@/controllers/API/queries/flows/use-patch-update-flow";
 import useDeleteFlow from "@/hooks/flows/use-delete-flow";
 import useAssistantManagerStore from "@/stores/assistantManagerStore";
 import useFlowBuilderWelcomeStore from "@/stores/flowBuilderWelcomeStore";
+import useFlowStore from "@/stores/flowStore";
 import useFlowsManagerStore from "@/stores/flowsManagerStore";
 import TemplatesModal from "../../../modals/templatesModal";
 import { FlowBuilderWelcome } from "./flow-builder-welcome";
 import { useApplyTemplateToCurrentFlow } from "./hooks/use-apply-template-to-current-flow";
+
+const DEFAULT_FLOW_NAME_RE = /^New Flow(?: \(\d+\))?$/i;
+
+const deriveWorkflowName = (prompt: string): string => {
+  let value = prompt.replace(/\s+/g, " ").trim();
+
+  value = value
+    .replace(/^please\s+/i, "")
+    .replace(/^(build|create|make|design|set up)\s+/i, "")
+    .replace(/^(me\s+)?(an?\s+)?/i, "");
+
+  // Prefer the subject of the request rather than the full instruction.
+  value = value.split(/\s+(?:that|which|so that|with the ability to)\s+/i)[0];
+  value = value.split(/[.!?;,]/)[0].trim();
+
+  const words = value.split(" ").filter(Boolean).slice(0, 7);
+  let name = words.join(" ").trim();
+
+  if (!name) name = "AI Workflow";
+  if (name.length > 48) name = `${name.slice(0, 45).trimEnd()}…`;
+
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
 
 /**
  * Renders the FlowBuilderWelcome overlay on the canvas plus the
@@ -31,8 +56,10 @@ export function FlowBuilderWelcomeMount() {
     (state) => state.setPendingMessage,
   );
   const currentFlowId = useFlowsManagerStore((state) => state.currentFlowId);
+  const currentFlow = useFlowsManagerStore((state) => state.currentFlow);
   const flows = useFlowsManagerStore((state) => state.flows);
   const { deleteFlow } = useDeleteFlow();
+  const { mutateAsync: updateFlow } = usePatchUpdateFlow();
 
   // If the user navigates to a different flow while the welcome is open
   // (e.g. picks a template in the TemplatesModal that spins up a fresh
@@ -77,6 +104,48 @@ export function FlowBuilderWelcomeMount() {
   // the real sidebar pre-expanded with the right section selected.
   const { setOpen: setSidebarOpen, setActiveSection } = useSidebar();
 
+  const renamePlaceholderFlow = useCallback(
+    (prompt: string) => {
+      if (
+        !currentFlowId ||
+        !currentFlow ||
+        !DEFAULT_FLOW_NAME_RE.test(currentFlow.name)
+      ) {
+        return;
+      }
+
+      const name = deriveWorkflowName(prompt);
+
+      // Naming is helpful but must never delay AI generation. Persist in the
+      // background and update both local flow stores when the API responds.
+      void updateFlow({ id: currentFlowId, name })
+        .then(() => {
+          const manager = useFlowsManagerStore.getState();
+          const existingFlows = manager.flows;
+
+          if (existingFlows) {
+            manager.setFlows(
+              existingFlows.map((flow) =>
+                flow.id === currentFlowId ? { ...flow, name } : flow,
+              ),
+            );
+          }
+
+          const editorFlow = useFlowStore.getState().currentFlow;
+          if (editorFlow && editorFlow.id === currentFlowId) {
+            useFlowStore.getState().setCurrentFlow({
+              ...editorFlow,
+              name,
+            });
+          }
+        })
+        .catch(() => {
+          // AI generation should still proceed even if naming fails.
+        });
+    },
+    [currentFlowId, currentFlow, updateFlow],
+  );
+
   const handleSubmit = useCallback(
     (text: string) => {
       // Order matters here:
@@ -88,11 +157,17 @@ export function FlowBuilderWelcomeMount() {
       //   3. ``setAssistantSidebarOpen(true)`` last — flips the panel on,
       //      causing it to mount AFTER the pending message is already in
       //      the store so its open-effect picks it up on first render.
+      renamePlaceholderFlow(text);
       close();
       setPendingMessage(text);
       setAssistantSidebarOpen(true);
     },
-    [setPendingMessage, setAssistantSidebarOpen, close],
+    [
+      renamePlaceholderFlow,
+      setPendingMessage,
+      setAssistantSidebarOpen,
+      close,
+    ],
   );
 
   const handleSelectTemplate = useCallback(

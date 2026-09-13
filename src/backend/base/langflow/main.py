@@ -207,9 +207,9 @@ def get_lifespan(*, fix_migration=False, version=None):
 
         # Startup message
         if version:
-            await logger.adebug(f"Starting Langflow v{version}...")
+            await logger.adebug(f"Starting NodusAI v{version}...")
         else:
-            await logger.adebug("Starting Langflow...")
+            await logger.adebug("Starting NodusAI...")
 
         sync_flows_from_fs_task = None
         mcp_init_task = None
@@ -833,7 +833,7 @@ def get_lifespan(*, fix_migration=False, version=None):
 
                 # Step 4: Finalizing Shutdown
                 with shutdown_progress.step(4):
-                    await logger.adebug("Langflow shutdown complete")
+                    await logger.adebug("NodusAI shutdown complete")
 
                 # Show completion summary and farewell
                 shutdown_progress.print_shutdown_summary()
@@ -862,7 +862,7 @@ def create_app():
     settings = get_settings_service().settings
 
     app = FastAPI(
-        title="Langflow",
+        title="NodusAI",
         version=__version__,
         lifespan=lifespan,
         root_path=settings.root_path,

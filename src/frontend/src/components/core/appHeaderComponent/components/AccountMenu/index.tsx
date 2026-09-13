@@ -1,13 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { FaDiscord, FaGithub } from "react-icons/fa";
-import { ForwardedIconComponent } from "@/components/common/genericIconComponent";
-import {
-  DATASTAX_DOCS_URL,
-  DISCORD_URL,
-  DOCS_URL,
-  GITHUB_URL,
-  TWITTER_URL,
-} from "@/constants/constants";
+import { DATASTAX_DOCS_URL, DOCS_URL } from "@/constants/constants";
 import { useLogout } from "@/controllers/API/queries/auth";
 import { CustomAdminPageMenuItem } from "@/customization/components/custom-admin-page-menu-item";
 import { CustomHeaderMenuItemsTitle } from "@/customization/components/custom-header-menu-items-title";
@@ -17,7 +10,6 @@ import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
 import useAuthStore from "@/stores/authStore";
 import { useDarkStore } from "@/stores/darkStore";
 import { useUtilityStore } from "@/stores/utilityStore";
-import { cn, stripReleaseStageFromVersion } from "@/utils/utils";
 import {
   HeaderMenu,
   HeaderMenuItemButton,
@@ -29,8 +21,9 @@ import ThemeButtons from "../ThemeButtons";
 
 export const AccountMenu = () => {
   const { t } = useTranslation();
+  const githubUrl = "https://github.com/baerdaisy2-cmyk/NodusAI";
+  const discordUsername = "ragnar_lothbr17";
   const version = useDarkStore((state) => state.version);
-  const latestVersion = useDarkStore((state) => state.latestVersion);
   const navigate = useCustomNavigate();
   const { mutate: mutationLogout } = useLogout();
   const hideLogoutButton = useUtilityStore((state) => state.hideLogoutButton);
@@ -39,15 +32,6 @@ export const AccountMenu = () => {
   const handleLogout = () => {
     mutationLogout();
   };
-
-  const isLatestVersion = (() => {
-    if (!version || !latestVersion) return false;
-
-    const currentBaseVersion = stripReleaseStageFromVersion(version);
-    const latestBaseVersion = stripReleaseStageFromVersion(latestVersion);
-
-    return currentBaseVersion === latestBaseVersion;
-  })();
 
   return (
     <HeaderMenu>
@@ -72,17 +56,8 @@ export const AccountMenu = () => {
                 >
                   {t("account.version")}
                 </span>
-                <div
-                  className={cn(
-                    "float-right text-xs",
-                    isLatestVersion && "text-accent-emerald-foreground",
-                    !isLatestVersion && "text-accent-amber-foreground",
-                  )}
-                >
-                  {version}{" "}
-                  {isLatestVersion
-                    ? t("account.latest")
-                    : t("account.updateAvailable")}
+                <div className="float-right text-xs text-muted-foreground">
+                  {version || "—"}
                 </div>
               </div>
             </div>
@@ -101,6 +76,24 @@ export const AccountMenu = () => {
                 {t("account.settings")}
               </span>
             </HeaderMenuItemButton>
+            <HeaderMenuItemButton
+              onClick={() => {
+                navigate("/settings/model-providers");
+              }}
+            >
+              <span data-testid="menu_model_providers_button">
+                {t("account.modelProviders")}
+              </span>
+            </HeaderMenuItemButton>
+            <HeaderMenuItemButton
+              onClick={() => {
+                navigate("/settings/api-keys");
+              }}
+            >
+              <span data-testid="menu_api_keys_button">
+                {t("account.apiKeys")}
+              </span>
+            </HeaderMenuItemButton>
 
             <CustomAdminPageMenuItem onNavigate={(path) => navigate(path)} />
             <HeaderMenuItemLink
@@ -114,7 +107,7 @@ export const AccountMenu = () => {
           </div>
 
           <div>
-            <HeaderMenuItemLink newPage href={GITHUB_URL}>
+            <HeaderMenuItemLink newPage href={githubUrl}>
               <span
                 data-testid="menu_github_button"
                 id="menu_github_button"
@@ -124,7 +117,9 @@ export const AccountMenu = () => {
                 {t("account.github")}
               </span>
             </HeaderMenuItemLink>
-            <HeaderMenuItemLink newPage href={DISCORD_URL}>
+            <HeaderMenuItemButton
+              onClick={() => navigator.clipboard.writeText(discordUsername)}
+            >
               <span
                 data-testid="menu_discord_button"
                 id="menu_discord_button"
@@ -134,23 +129,9 @@ export const AccountMenu = () => {
                   className="h-4 w-4 text-[#5865F2]"
                   aria-hidden="true"
                 />
-                {t("account.discord")}
+                @{discordUsername}
               </span>
-            </HeaderMenuItemLink>
-            <HeaderMenuItemLink newPage href={TWITTER_URL}>
-              <span
-                data-testid="menu_twitter_button"
-                id="menu_twitter_button"
-                className="flex items-center gap-2"
-              >
-                <ForwardedIconComponent
-                  strokeWidth={2}
-                  name="TwitterX"
-                  className="h-4 w-4"
-                />
-                {t("account.twitter")}
-              </span>
-            </HeaderMenuItemLink>
+            </HeaderMenuItemButton>
           </div>
 
           <div className="flex items-center justify-between px-4 py-[6.5px] text-sm">

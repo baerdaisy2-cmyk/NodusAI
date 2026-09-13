@@ -4,13 +4,15 @@ import { FaDiscord, FaGithub } from "react-icons/fa";
 import IconComponent from "@/components/common/genericIconComponent";
 import ShadTooltip from "@/components/common/shadTooltipComponent";
 import { Button } from "@/components/ui/button";
-import { DISCORD_URL, GITHUB_URL } from "@/constants/constants";
+import { GITHUB_URL } from "@/constants/constants";
 import { useGetUserData, useUpdateUser } from "@/controllers/API/queries/auth";
 import ModalsComponent from "@/pages/MainPage/components/modalsComponent";
 import useFlowsManagerStore from "@/stores/flowsManagerStore";
 import { useUtilityStore } from "@/stores/utilityStore";
 import type { Users } from "@/types/api";
 import { cn } from "@/utils/utils";
+
+const DISCORD_USERNAME = "ragnar_lothbr17";
 
 export const GetStartedProgress: FC<{
   userData: Users;
@@ -79,7 +81,7 @@ export const GetStartedProgress: FC<{
             window.open(GITHUB_URL, "_blank", "noopener,noreferrer");
           } else if (key === "discord_clicked") {
             setIsDiscordJoinedChild(true);
-            window.open(DISCORD_URL, "_blank", "noopener,noreferrer");
+            void navigator.clipboard.writeText(DISCORD_USERNAME);
           } else if (key === "dialog_dismissed") {
             handleDismissDialog();
           }

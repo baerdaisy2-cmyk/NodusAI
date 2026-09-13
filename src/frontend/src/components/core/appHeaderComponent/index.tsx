@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AlertDropdown from "@/alerts/alertDropDown";
-import LangflowLogo from "@/assets/LangflowLogo.svg?react";
+import logoDarkPng from "@/assets/logo_dark.png";
+import logoLightPng from "@/assets/logo_light.png";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import ModelProviderCount from "@/components/common/modelProviderCountComponent";
 import ShadTooltip from "@/components/common/shadTooltipComponent";
@@ -62,11 +63,23 @@ export default function AppHeader(): JSX.Element {
         <Button
           unstyled
           onClick={() => navigate("/")}
-          className="mr-1 flex h-8 w-8 items-center"
+          className="mr-1 flex h-8 items-center gap-2 rounded-md px-1.5 transition-colors hover:bg-muted"
           data-testid="icon-ChevronLeft"
           aria-label={t("header.home")}
         >
-          <LangflowLogo className="h-5 w-5" aria-hidden="true" />
+          <img
+            src={logoLightPng}
+            alt=""
+            aria-hidden="true"
+            className="h-6 w-6 object-contain dark:hidden"
+          />
+          <img
+            src={logoDarkPng}
+            alt=""
+            aria-hidden="true"
+            className="hidden h-6 w-6 object-contain dark:block"
+          />
+          <span className="hidden text-sm font-semibold sm:inline">NodusAI</span>
         </Button>
         <CustomOrgSelector />
       </div>

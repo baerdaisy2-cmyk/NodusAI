@@ -23,10 +23,9 @@ export default function TemplateCardComponent({
     swatchColors.length;
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" || e.key === " ") {
+    if ((e.key === "Enter" || e.key === " ") && !disabled) {
       e.preventDefault();
       onClick();
-      if (!disabled) onClick();
     }
   };
 
@@ -34,7 +33,7 @@ export default function TemplateCardComponent({
     <div
       data-testid={`template-${convertTestName(example.name)}`}
       className={cn(
-        "group flex gap-3 overflow-hidden rounded-md p-3 hover:bg-muted focus-visible:bg-muted",
+        "group flex gap-3 overflow-hidden rounded-lg border border-transparent p-3 transition-colors hover:border-accent-assistant-brand/20 hover:bg-muted focus-visible:border-accent-assistant-brand/30 focus-visible:bg-muted",
         disabled ? "cursor-default opacity-80" : "cursor-pointer",
       )}
       tabIndex={disabled ? -1 : 0}

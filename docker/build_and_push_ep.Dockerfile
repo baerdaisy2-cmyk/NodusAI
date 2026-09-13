@@ -148,16 +148,16 @@ ENV BASH_ENV="" \
 # and permissions into the new volume, so the in-container uid=1000 user can
 # write secret_key, profile_pictures, etc. Without this, the volume is created
 # as root:root and Langflow crashes during startup with PermissionError on
-# /app/langflow/secret_key. See https://github.com/langflow-ai/langflow/issues/10437
+# /app/langflow/secret_key. See https://github.com/baerdaisy2-cmyk/NodusAI/issues/10437
 RUN mkdir -p /app/data /app/langflow \
     && chown -R 1000:0 /app/data /app/langflow \
     && chmod -R g+rwX /app/data /app/langflow
 
-LABEL org.opencontainers.image.title=langflow
-LABEL org.opencontainers.image.authors=['Langflow']
+LABEL org.opencontainers.image.title=nodusai
+LABEL org.opencontainers.image.authors=['NodusAI']
 LABEL org.opencontainers.image.licenses=MIT
-LABEL org.opencontainers.image.url=https://github.com/langflow-ai/langflow
-LABEL org.opencontainers.image.source=https://github.com/langflow-ai/langflow
+LABEL org.opencontainers.image.url=https://github.com/baerdaisy2-cmyk/NodusAI
+LABEL org.opencontainers.image.source=https://github.com/baerdaisy2-cmyk/NodusAI
 
 WORKDIR /app
 

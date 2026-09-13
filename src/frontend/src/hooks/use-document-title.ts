@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 
-export const APP_NAME = "Langflow";
+export const APP_NAME = "NodusAI";
 
 /**
  * Builds the tab title for a page. Titles that already carry the product name
- * (e.g. the "Langflow API Keys" settings page) are used as-is so the tab does
- * not read "Langflow API Keys | Langflow".
+ * (e.g. the "NodusAI API Keys" settings page) are used as-is so the tab does
+ * not read "NodusAI API Keys | NodusAI".
  */
 export function formatDocumentTitle(title?: string | null): string {
   const pageTitle = title?.trim();

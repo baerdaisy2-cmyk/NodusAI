@@ -1,7 +1,7 @@
 {
-  "name": "Langflow",
-  "short_name": "Langflow",
-  "description": "Langflow is a low-code builder that makes it easier to build powerful AIs that can use any API, model, or database.",
+  "name": "NodusAI",
+  "short_name": "NodusAI",
+  "description": "NodusAI is a visual platform for building, connecting, and deploying AI agents and intelligent workflows.",
   "icons": [
     {
       "src": "icons/32x32.png",
@@ -24,7 +24,11 @@
       "type": "image/x-icon"
     }
   ],
-  "categories": ["developer", "productivity", "utilities"],
+  "categories": [
+    "developer",
+    "productivity",
+    "utilities"
+  ],
   "screenshots": [],
   "related_applications": [],
   "prefer_related_applications": false

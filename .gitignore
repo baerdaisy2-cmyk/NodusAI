@@ -315,3 +315,7 @@ _context
 requirements-mend.txt
 requirements-workspace-mend.txt
 requirements-gp-mend.txt
+# NodusAI local patch/release artifacts
+NodusAI-*.zip
+NODUSAI_*_NOTES.md
+NODUSAI_BUILD_WITH_AI*.md

@@ -32,6 +32,8 @@ interface HeaderComponentProps {
    * templates modal when not provided so legacy call sites still work.
    */
   onNewFlow?: () => void;
+  /** Creates a new flow with the NodusAI AI-builder welcome enabled. */
+  onBuildWithAI?: () => void;
   folderName?: string;
   setSearch: (search: string) => void;
   isEmptyFolder: boolean;
@@ -46,6 +48,7 @@ const HeaderComponent = ({
   setView,
   setNewProjectModal,
   onNewFlow,
+  onBuildWithAI,
   setSearch,
   isEmptyFolder,
   selectedFlows,
@@ -297,27 +300,49 @@ const HeaderComponent = ({
                   </DeleteConfirmationModal>
                 </div>
                 {!hideNewFlowButton && (
-                  <ShadTooltip content={t("mainPage.newFlow")} side="bottom">
-                    <Button
-                      variant="default"
-                      size="iconMd"
-                      className="z-50 px-2.5 !text-mmd"
-                      onClick={() =>
-                        onNewFlow ? onNewFlow() : setNewProjectModal(true)
-                      }
-                      id="new-project-btn"
-                      data-testid="new-project-btn"
-                    >
-                      <ForwardedIconComponent
-                        name="Plus"
-                        aria-hidden="true"
-                        className="h-4 w-4"
-                      />
-                      <span className="hidden whitespace-nowrap font-semibold md:inline">
-                        {t("mainPage.newFlow")}
-                      </span>
-                    </Button>
-                  </ShadTooltip>
+                  <div className="flex items-center gap-2">
+                    {onBuildWithAI && (
+                      <ShadTooltip content={t("page.buildWithAI")} side="bottom">
+                        <Button
+                          variant="outline"
+                          size="iconMd"
+                          className="z-50 px-2.5 !text-mmd"
+                          onClick={onBuildWithAI}
+                          data-testid="build-with-ai-btn"
+                        >
+                          <ForwardedIconComponent
+                            name="Sparkles"
+                            aria-hidden="true"
+                            className="h-4 w-4 text-accent-assistant-brand"
+                          />
+                          <span className="hidden whitespace-nowrap font-semibold md:inline">
+                            {t("page.buildWithAI")}
+                          </span>
+                        </Button>
+                      </ShadTooltip>
+                    )}
+                    <ShadTooltip content={t("mainPage.newFlow")} side="bottom">
+                      <Button
+                        variant="default"
+                        size="iconMd"
+                        className="z-50 px-2.5 !text-mmd"
+                        onClick={() =>
+                          onNewFlow ? onNewFlow() : setNewProjectModal(true)
+                        }
+                        id="new-project-btn"
+                        data-testid="new-project-btn"
+                      >
+                        <ForwardedIconComponent
+                          name="Plus"
+                          aria-hidden="true"
+                          className="h-4 w-4"
+                        />
+                        <span className="hidden whitespace-nowrap font-semibold md:inline">
+                          {t("mainPage.newFlow")}
+                        </span>
+                      </Button>
+                    </ShadTooltip>
+                  </div>
                 )}
               </div>
             </div>

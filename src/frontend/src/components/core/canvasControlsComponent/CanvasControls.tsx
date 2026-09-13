@@ -4,8 +4,6 @@ import { ArrowRight, X } from "lucide-react";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
-import langflowAssistantIcon from "@/assets/langflow_assistant.svg";
-import langflowAssistantIdleIcon from "@/assets/langflow_assistant_idle.svg";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import {
   readAssistantDiscovered,
@@ -22,7 +20,7 @@ import HelpDropdown from "./HelpDropdown";
 import useMinimizeAllAndAlign from "./hooks/use-minimize-all-and-align";
 import { useDismissOnTabBoundary } from "./utils/use-dismiss-on-tab-boundary";
 
-// Delay before the "Try the new Langflow Assistant!" tooltip surfaces, in ms.
+// Delay before the NodusAI Assistant onboarding tooltip surfaces, in ms.
 // Long enough that an active user mid-task isn't interrupted; short enough
 // that a user who landed on the canvas and paused gets the hint.
 const ONBOARDING_TOOLTIP_DELAY_MS = 10_000;
@@ -187,27 +185,13 @@ const CanvasControls = ({
                 title={locked ? t("version.readOnly") : undefined}
                 aria-label={t("assistant.title")}
               >
-                {/* Idle state — uses the design-tuned
-                    ``langflow_assistant_idle.svg`` (noise filter + brand tint
-                    baked into the SVG). Hidden whenever the panel is open so
-                    the button reads as "active" alongside the open panel. */}
-                <img
-                  src={langflowAssistantIdleIcon}
-                  alt="Langflow Assistant"
-                  className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-150 ${
-                    assistantSidebarOpen ? "opacity-0" : "group-hover:opacity-0"
-                  }`}
-                />
-                {/* Brand-lit icon — surfaces on hover AND while the panel is
-                    open; both states share the same active brand identity. */}
-                <img
-                  src={langflowAssistantIcon}
-                  alt=""
+                <ForwardedIconComponent
+                  name="Sparkles"
                   aria-hidden="true"
-                  className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-150 ${
+                  className={`h-[18px] w-[18px] transition-colors duration-150 ${
                     assistantSidebarOpen
-                      ? "opacity-100"
-                      : "opacity-0 group-hover:opacity-100"
+                      ? "text-accent-assistant-brand"
+                      : "text-muted-foreground group-hover/btn:text-accent-assistant-brand"
                   }`}
                 />
               </Button>

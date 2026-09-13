@@ -10,9 +10,15 @@ type EmptyFolderProps = {
    *  flow with the welcome overlay primed. Falls back to ``setOpenModal``
    *  when omitted to keep legacy callers working. */
   onNewFlow?: () => void;
+  /** Starts a new flow with the NodusAI AI-builder welcome enabled. */
+  onBuildWithAI?: () => void;
 };
 
-export const EmptyFolder = ({ setOpenModal, onNewFlow }: EmptyFolderProps) => {
+export const EmptyFolder = ({
+  setOpenModal,
+  onNewFlow,
+  onBuildWithAI,
+}: EmptyFolderProps) => {
   const { t } = useTranslation();
   const folders = useFolderStore((state) => state.folders);
   const hideNewFlowButton = useUtilityStore((state) => state.hideNewFlowButton);
@@ -32,21 +38,54 @@ export const EmptyFolder = ({ setOpenModal, onNewFlow }: EmptyFolderProps) => {
           {t("emptyPage.description")}
         </p>
         {!hideNewFlowButton && (
-          <Button
-            variant="default"
-            onClick={() => (onNewFlow ? onNewFlow() : setOpenModal(true))}
-            id="new-project-btn"
-            data-testid="new_project_btn_empty_page"
-          >
-            <ForwardedIconComponent
-              name="plus"
-              aria-hidden="true"
-              className="h-4 w-4"
-            />
-            <span className="whitespace-nowrap font-semibold">
-              {t("emptyPage.newFlow")}
-            </span>
-          </Button>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {onBuildWithAI && (
+              <Button
+                variant="default"
+                onClick={onBuildWithAI}
+                className="bg-accent-assistant-brand text-white hover:bg-accent-assistant-brand/90"
+                data-testid="empty-folder-build-with-ai"
+              >
+                <ForwardedIconComponent
+                  name="Sparkles"
+                  aria-hidden="true"
+                  className="h-4 w-4"
+                />
+                <span className="whitespace-nowrap font-semibold">
+                  {t("page.buildWithAI")}
+                </span>
+              </Button>
+            )}
+            <Button
+              variant={onBuildWithAI ? "outline" : "default"}
+              onClick={() => (onNewFlow ? onNewFlow() : setOpenModal(true))}
+              id="new-project-btn"
+              data-testid="new_project_btn_empty_page"
+            >
+              <ForwardedIconComponent
+                name="Plus"
+                aria-hidden="true"
+                className="h-4 w-4"
+              />
+              <span className="whitespace-nowrap font-semibold">
+                {t("emptyPage.newFlow")}
+              </span>
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setOpenModal(true)}
+              data-testid="empty-folder-browse-templates"
+            >
+              <ForwardedIconComponent
+                name="LayoutPanelTop"
+                aria-hidden="true"
+                className="h-4 w-4"
+              />
+              <span className="whitespace-nowrap font-semibold">
+                {t("emptyPage.browseTemplates")}
+              </span>
+            </Button>
+          </div>
         )}
       </div>
     </div>

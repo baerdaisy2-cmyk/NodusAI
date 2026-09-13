@@ -10,11 +10,11 @@ import { useGetSessionsFromFlowQuery } from "@/controllers/API/queries/messages/
 import { ENABLE_PUBLISH } from "@/customization/feature-flags";
 import { track } from "@/customization/utils/analytics";
 import { customOpenNewTab } from "@/customization/utils/custom-open-new-tab";
-import { LangflowButtonRedirectTarget } from "@/customization/utils/urls";
+import { NodusAIButtonRedirectTarget } from "@/customization/utils/urls";
 import { isAuthenticatedPlayground } from "@/modals/IOModal/helpers/playground-auth";
 import { useUtilityStore } from "@/stores/utilityStore";
 import { swatchColors } from "@/utils/styleUtils";
-import LangflowLogoColor from "../../assets/LangflowLogoColor.svg?react";
+import NodusLogo from "@/components/common/nodusLogo";
 import IconComponent from "../../components/common/genericIconComponent";
 import ShadTooltip from "../../components/common/shadTooltipComponent";
 import { Button } from "../../components/ui/button";
@@ -304,9 +304,9 @@ export default function IOModal({
 
   const showPublishOptions = playgroundPage && ENABLE_PUBLISH;
 
-  const LangflowButtonClick = () => {
-    track("LangflowButtonClick");
-    customOpenNewTab(LangflowButtonRedirectTarget());
+  const NodusAIButtonClick = () => {
+    track("NodusAIButtonClick");
+    customOpenNewTab(NodusAIButtonRedirectTarget());
   };
 
   const swatchIndex =
@@ -439,11 +439,11 @@ export default function IOModal({
                       <ThemeButtons />
                     </div>
                     <Button
-                      onClick={LangflowButtonClick}
+                      onClick={NodusAIButtonClick}
                       variant="primary"
                       className="w-full !rounded-xl shadow-lg"
                     >
-                      <LangflowLogoColor aria-hidden="true" />
+                      <NodusLogo aria-hidden="true" />
                       <div className="text-sm">
                         {t("modal.io.builtWithLangflow")}
                       </div>
@@ -462,10 +462,10 @@ export default function IOModal({
                   <Button
                     variant="primary"
                     className="h-12 w-12 !rounded-xl !p-4 shadow-lg"
-                    onClick={LangflowButtonClick}
+                    onClick={NodusAIButtonClick}
                     aria-label={t("modal.io.builtWithLangflow")}
                   >
-                    <LangflowLogoColor
+                    <NodusLogo
                       className="h-[18px] w-[18px] scale-150"
                       aria-hidden="true"
                     />

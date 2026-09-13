@@ -28,6 +28,7 @@ import FlowPage from "./pages/FlowPage";
 import LoginPage from "./pages/LoginPage";
 import FilesPage from "./pages/MainPage/pages/filesPage";
 import HomePage from "./pages/MainPage/pages/homePage";
+import NodusLandingPage from "./pages/MainPage/pages/nodusLandingPage";
 import KnowledgePage from "./pages/MainPage/pages/knowledgePage";
 import SourceChunksPage from "./pages/MainPage/pages/knowledgePage/sourceChunksPage/SourceChunksPage";
 import CollectionPage from "./pages/MainPage/pages/main-page";
@@ -82,11 +83,8 @@ const router = createBrowserRouter(
           >
             <Route path="" element={<AppAuthenticatedPage />}>
               <Route path="" element={<CustomDashboardWrapperPage />}>
+                <Route index element={<NodusLandingPage />} />
                 <Route path="" element={<CollectionPage />}>
-                  <Route
-                    index
-                    element={<CustomNavigate replace to={"flows"} />}
-                  />
                   {ENABLE_FILE_MANAGEMENT && (
                     <Route path="assets">
                       <Route

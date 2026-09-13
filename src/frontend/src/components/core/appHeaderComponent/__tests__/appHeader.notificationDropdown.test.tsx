@@ -8,10 +8,8 @@ import AppHeader from "../index";
 // pair around the notification button), which mounts two independent
 // Popovers on the same trigger. That's invisible under the pass-through
 // mock used by appHeader.a11y.test.tsx, so it needs real-DOM coverage here.
-jest.mock("@/assets/LangflowLogo.svg?react", () => ({
-  __esModule: true,
-  default: () => null,
-}));
+jest.mock("@/assets/logo_light.png", () => "logo_light.png");
+jest.mock("@/assets/logo_dark.png", () => "logo_dark.png");
 jest.mock("@/components/common/modelProviderCountComponent", () => ({
   __esModule: true,
   default: () => null,

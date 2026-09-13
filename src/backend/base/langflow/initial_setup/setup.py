@@ -863,7 +863,7 @@ async def get_or_create_starter_folder(session):
 
 
 async def get_or_create_assistant_folder(session, user_id: UUID):
-    """Create or get the Langflow Assistant folder for a specific user.
+    """Create or get the NodusAI Assistant folder for a specific user.
 
     This folder contains agentic flows and cannot be deleted.
 
@@ -872,21 +872,33 @@ async def get_or_create_assistant_folder(session, user_id: UUID):
         user_id: The ID of the user who owns the folder
 
     Returns:
-        The Langflow Assistant folder
+        The NodusAI Assistant folder
     """
-    stmt = select(Folder).where(Folder.user_id == user_id, Folder.name == ASSISTANT_FOLDER_NAME)
+    from langflow.initial_setup.constants import LEGACY_ASSISTANT_FOLDER_NAME
+
+    stmt = select(Folder).where(
+        Folder.user_id == user_id,
+        Folder.name.in_([ASSISTANT_FOLDER_NAME, LEGACY_ASSISTANT_FOLDER_NAME]),
+    )
     result = await session.exec(stmt)
     folder = result.first()
 
-    if not folder:
-        new_folder = FolderCreate(name=ASSISTANT_FOLDER_NAME, description=ASSISTANT_FOLDER_DESCRIPTION)
-        db_folder = Folder.model_validate(new_folder, from_attributes=True)
-        db_folder.user_id = user_id
-        session.add(db_folder)
-        await session.commit()
-        await session.refresh(db_folder)
-        return db_folder
-    return folder
+    if folder:
+        if folder.name == LEGACY_ASSISTANT_FOLDER_NAME:
+            folder.name = ASSISTANT_FOLDER_NAME
+            folder.description = ASSISTANT_FOLDER_DESCRIPTION
+            session.add(folder)
+            await session.commit()
+            await session.refresh(folder)
+        return folder
+
+    new_folder = FolderCreate(name=ASSISTANT_FOLDER_NAME, description=ASSISTANT_FOLDER_DESCRIPTION)
+    db_folder = Folder.model_validate(new_folder, from_attributes=True)
+    db_folder.user_id = user_id
+    session.add(db_folder)
+    await session.commit()
+    await session.refresh(db_folder)
+    return db_folder
 
 
 async def load_agentic_flows() -> list[tuple[anyio.Path, dict]]:
@@ -919,10 +931,10 @@ async def load_agentic_flows() -> list[tuple[anyio.Path, dict]]:
 
 
 async def create_or_update_agentic_flows(session: AsyncSession, user_id: UUID) -> None:
-    """Create or update agentic flows in the Langflow Assistant folder for a user.
+    """Create or update agentic flows in the NodusAI Assistant folder for a user.
 
     This function is called on user login to ensure that all agentic flows
-    are present and up-to-date in the user's Langflow Assistant folder.
+    are present and up-to-date in the user's NodusAI Assistant folder.
 
     The function will:
     - Extract flow_id and endpoint_name from the JSON
@@ -942,7 +954,7 @@ async def create_or_update_agentic_flows(session: AsyncSession, user_id: UUID) -
         return
 
     try:
-        # Get or create the Langflow Assistant folder
+        # Get or create the NodusAI Assistant folder
         assistant_folder = await get_or_create_assistant_folder(session, user_id)
 
         # Load all agentic flows from the directory

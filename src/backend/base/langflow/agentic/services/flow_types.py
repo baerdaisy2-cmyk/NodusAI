@@ -58,9 +58,9 @@ EDIT_CONTINUATION_INPUT = (
 )
 
 OFF_TOPIC_REFUSAL_MESSAGE = (
-    "I appreciate your interest, but I'm the Langflow Assistant and can only help with "
+    "I appreciate your interest, but I'm the NodusAI Assistant and can only help with "
     "Langflow-related topics such as building components, creating flows, configuring "
-    "deployments, and troubleshooting issues. Could you rephrase your question about Langflow?"
+    "deployments, and troubleshooting issues. Could you rephrase your question about NodusAI?"
 )
 
 VALIDATION_RETRY_TEMPLATE = """The previous component code has an error. Please fix it.

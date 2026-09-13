@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { useTranslation } from "react-i18next";
-import MCPLangflow from "@/assets/MCPLangflow.png";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
+import NodusLogo from "@/components/common/nodusLogo";
 import { Button } from "@/components/ui/button";
 import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
 
@@ -26,11 +26,25 @@ export const MCPServerNotice: FC<{
           </div>
           <div className="">{t("sidebar.mcpProjectsTitle")}</div>
         </div>
-        <img
-          src={MCPLangflow}
-          alt={t("sidebar.mcpNoticeImageAlt")}
-          className="rounded-xl"
-        />
+        <div className="flex items-center justify-center gap-4 rounded-xl border bg-muted/40 px-5 py-6">
+          <div className="flex items-center gap-2">
+            <NodusLogo className="h-8 w-8" aria-hidden="true" />
+            <span className="font-semibold">NodusAI</span>
+          </div>
+          <ForwardedIconComponent
+            name="Plus"
+            className="h-4 w-4 text-muted-foreground"
+            aria-hidden="true"
+          />
+          <div className="flex items-center gap-2">
+            <ForwardedIconComponent
+              name="Mcp"
+              className="h-8 w-8"
+              aria-hidden="true"
+            />
+            <span className="font-semibold">MCP</span>
+          </div>
+        </div>
         <p className="text-sm text-secondary-foreground">
           {t("sidebar.mcpExposeFlows")}
         </p>

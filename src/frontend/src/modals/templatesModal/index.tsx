@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
@@ -11,12 +11,14 @@ import useFlowBuilderWelcomeStore from "@/stores/flowBuilderWelcomeStore";
 import useFlowsManagerStore from "@/stores/flowsManagerStore";
 import { useUtilityStore } from "@/stores/utilityStore";
 import type { Category, NavItem } from "@/types/templates/types";
+import { isNodusServerTemplate } from "@/utils/nodus-server-templates";
 import { cn } from "@/utils/utils";
 import type { newFlowModalPropsType } from "../../types/components";
 import BaseModal from "../baseModal";
 import GetStartedComponent from "./components/GetStartedComponent";
 import { Nav } from "./components/navComponent";
 import TemplateContentComponent from "./components/TemplateContentComponent";
+import LocalTemplatesComponent from "./components/LocalTemplatesComponent";
 import {
   ALL_TEMPLATES_TAB,
   availableTemplateTabs,
@@ -29,6 +31,16 @@ export default function TemplatesModal({
   const { t } = useTranslation();
   const [currentTab, setCurrentTab] = useState("get-started");
   const [loading, setLoading] = useState(false);
+  const flows = useFlowsManagerStore((state) => state.flows);
+  const [localTemplates, setLocalTemplates] = useState(
+    () => (flows ?? []).filter(isNodusServerTemplate),
+  );
+
+  useEffect(() => {
+    if (open) {
+      setLocalTemplates((flows ?? []).filter(isNodusServerTemplate));
+    }
+  }, [open, flows]);
   const addFlow = useAddFlow();
   const navigate = useCustomNavigate();
   const dismissWelcomeForNavigation = useFlowBuilderWelcomeStore(
@@ -90,6 +102,11 @@ export default function TemplatesModal({
           icon: "LayoutPanelTop",
           id: "all-templates",
         },
+        {
+          title: t("templatesModal.myTemplates"),
+          icon: "Bookmark",
+          id: "my-templates",
+        },
       ],
     },
     {
@@ -139,7 +156,11 @@ export default function TemplatesModal({
   const categories: Category[] = rawCategories
     .map((category) => ({
       ...category,
-      items: category.items.filter((item) => availableTabs.has(item.id)),
+      items: category.items.filter(
+        (item) =>
+          item.id === "my-templates" ||
+          availableTabs.has(item.id),
+      ),
     }))
     .filter((category) => category.items.length > 0);
   const selectableItems: NavItem[] = categories.flatMap(
@@ -176,6 +197,13 @@ export default function TemplatesModal({
             <div className="flex flex-1 flex-col gap-4 overflow-auto p-6 md:gap-8">
               {effectiveTab === "get-started" ? (
                 <GetStartedComponent
+                  loading={loading}
+                  onFlowCreating={handleFlowCreating}
+                />
+              ) : effectiveTab === "my-templates" ? (
+                <LocalTemplatesComponent
+                  templates={localTemplates}
+                  setTemplates={setLocalTemplates}
                   loading={loading}
                   onFlowCreating={handleFlowCreating}
                 />

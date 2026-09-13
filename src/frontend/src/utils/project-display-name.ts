@@ -1,20 +1,26 @@
 import type { FolderType, ProjectListType } from "@/pages/MainPage/entities";
 
-type ProjectNameTranslator = (
-  key: "project.ownedBy",
-  options: { name: string; owner: string },
-) => string;
+type ProjectNameTranslator = {
+  (key: "project.starterName"): string;
+  (
+    key: "project.ownedBy",
+    options: { name: string; owner: string },
+  ): string;
+};
 
 export const getProjectDisplayName = (
   project: Pick<FolderType, "id" | "name" | "owner_username" | "is_owner">,
   t: ProjectNameTranslator,
 ): string => {
+  const displayName =
+    project.name === "Starter Project" ? t("project.starterName") : project.name;
+
   if (project.is_owner !== false || !project.owner_username) {
-    return project.name;
+    return displayName;
   }
 
   return t("project.ownedBy", {
-    name: project.name,
+    name: displayName,
     owner: project.owner_username,
   });
 };

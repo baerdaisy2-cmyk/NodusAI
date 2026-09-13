@@ -1,7 +1,7 @@
 [project]
 name = "langflow"
 version = "1.12.1"
-description = "A Python package with a built-in web application"
+description = "NodusAI visual AI workflow builder, based on the Langflow open-source engine"
 requires-python = ">=3.10,<3.15"
 license = "MIT"
 keywords = ["nlp", "langchain", "openai", "gpt", "gui"]

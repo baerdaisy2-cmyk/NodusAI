@@ -61,10 +61,9 @@
     --accent-pink: 326, 78%, 95%; /* hsl(326, 78%, 95%) */
     --accent-pink-foreground: 333 71% 51%; /* hsl(333, 71%, 51%) */
 
-    /* Langflow Assistant brand palette — kept identical in light and dark
-       so the assistant glyph + input glow read the same in either theme. */
-    --accent-assistant-brand: 335 100% 60%; /* #FF3276 — assistant pink */
-    --accent-assistant-purple: 270 100% 73%; /* #BA75FF — assistant purple */
+    /* NodusAI brand palette — shared across light and dark themes. */
+    --accent-assistant-brand: 258 90% 66%; /* NodusAI violet */
+    --accent-assistant-purple: 276 91% 68%; /* NodusAI purple */
 
     --accent-purple-muted: 271 100% 64% / 0.2; /* #AD46FF33 */
     --accent-purple-muted-foreground: 271 100% 74%; /* #C27AFF */
@@ -270,9 +269,9 @@
 
     --accent-pink: 336, 69%, 30%; /* hsl(336, 69%, 30%) */
     --accent-pink-foreground: 329 86% 70%; /* hsl(329, 86%, 70%) */
-    /* Brand colors stay identical in dark mode — see :root for rationale. */
-    --accent-assistant-brand: 335 100% 60%; /* #FF3276 — assistant pink */
-    --accent-assistant-purple: 270 100% 73%; /* #BA75FF — assistant purple */
+    /* NodusAI brand colors stay identical in dark mode. */
+    --accent-assistant-brand: 258 90% 66%; /* NodusAI violet */
+    --accent-assistant-purple: 276 91% 68%; /* NodusAI purple */
     --accent-purple-muted: 271 100% 64% / 0.2; /* #AD46FF33 */
     --accent-purple-muted-foreground: 271 100% 74%; /* #C27AFF */
     --accent-purple-foreground: 270, 95%, 75%;
